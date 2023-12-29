@@ -1,5 +1,10 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import useAuth from "../Hooks/useAuth";
+import Swal from "sweetalert2";
 const Navbar = () => {
+  const { user, logOut } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const navLinks = (
     <>
       <li>
@@ -13,6 +18,21 @@ const Navbar = () => {
       </li>
     </>
   );
+  const handleSignOut = () => {
+    logOut()
+      .then(() => {
+        console.log("Logout");
+        Swal.fire({
+            title: "Success!",
+            text: "Log out Successfully",
+            icon: "success",
+            confirmButtonText: "Cool",
+          });
+          navigate(location?.state ? location.state : "/");
+
+      })
+      .catch();
+  };
   return (
     <div>
       <div className="navbar bg-base-100">
@@ -57,17 +77,17 @@ const Navbar = () => {
           <ul className="menu menu-horizontal px-1">{navLinks}</ul>
         </div>
         <div className="navbar-end">
-          {/* {user ? (
+          {user ? (
               <button onClick={handleSignOut} className="btn btn-neutral">
                 Log Out
               </button>
-            ) : ( */}
-          <Link to="/login">
+            ) : (
+          <Link to={'/login'}>
             <button className="btn bg-[#4463B9] text-white font-bold">
               Login
             </button>
           </Link>
-          {/* )} */}
+           )} 
         </div>
       </div>
     </div>
