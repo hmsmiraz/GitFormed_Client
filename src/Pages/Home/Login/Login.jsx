@@ -23,7 +23,7 @@ const Login = () => {
           icon: "success",
           confirmButtonText: "Cool",
         });
-        navigate("/dashboard/allTask");
+        navigate("/");
       })
       .catch((error) => {
         console.log(error);
