@@ -7,6 +7,7 @@ import Login from "../Pages/Home/Login/Login";
 import Register from "../Pages/Home/Register/Register";
 import CreateRepo from "../Pages/Home/CreateRepo/CreateRepo";
 import Repositories from "../Pages/Home/Repositories/Repositories";
+import WatchList from "../Pages/Home/Watchlist/WatchList";
 
 export const router = createBrowserRouter([
     {
@@ -32,6 +33,10 @@ export const router = createBrowserRouter([
         {
             path: '/repositories',
             element: <Repositories></Repositories>
+        },
+        {
+            path: '/watchList',
+            element: <WatchList></WatchList>
         },
       ]
     },

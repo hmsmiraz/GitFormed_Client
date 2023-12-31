@@ -11,6 +11,7 @@ import React from "react";
 import Swal from "sweetalert2";
 import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 import { RiEdit2Fill } from "react-icons/ri";
+import { FcViewDetails } from "react-icons/fc";
 const style = {
   position: "absolute",
   top: "50%",
@@ -24,13 +25,15 @@ const style = {
 };
 
 const Repositories = () => {
-  const [repositories] = useRepositories();
+  const [repositories, , refetch] = useRepositories();
   const { user } = useAuth();
   const email = user?.email;
   const axiosPublic = useAxiosPublic();
   const [open, setOpen] = React.useState(false);
+  const [openUser, setOpenUser] = React.useState(false);
   const [edit, setEdit] = React.useState(true);
   const [editableItem, setEditableItem] = React.useState(null);
+  const [itemUser, setItemUser] = React.useState(null);
   const languages = [
     {
       value: "javascript",
@@ -57,8 +60,15 @@ const Repositories = () => {
     setEditableItem(item);
     setOpen(true);
   };
+  const handleOpenUser = (item) => {
+    setItemUser(item);
+    setOpenUser(true);
+  };
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleCloseUser = () => {
+    setOpenUser(false);
   };
 
   const handleChange = (event, Code, language) => {
@@ -85,19 +95,56 @@ const Repositories = () => {
       setOpen(false);
     }
   };
+  const handleDelete = async (editableItem) => {
+    setOpen(false);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const res = await axiosPublic.delete(
+          `/repositories/${editableItem._id}`
+        );
+        console.log(res.data);
+        if (res.data.deletedCount > 0) {
+          refetch();
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: `${editableItem.repositoryName} has been deleted!`,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      }
+    });
+  };
+  const handleWatch = async (item) => {
+    console.log(item._id);
+  };
+  const handlePullReq = async (item) => {
+    console.log(item.createdDate);
+  };
   return (
     <div className="my-5">
       <h2 className="font-bold text-2xl text-blue-500 text-center">
         All Repositories Here!
       </h2>
       <div className="overflow-x-auto mt-3">
-        <table className="table">
+        <table className="table w-full">
           {/* head */}
           <thead>
             <tr>
               <th>#</th>
               <th>repositoryName</th>
               <th>createdDate</th>
+              <th>Total Watcher</th>
+              <th>Action</th>
               <th>Action</th>
               <th>Action</th>
             </tr>
@@ -108,43 +155,44 @@ const Repositories = () => {
                 <th>{index + 1}</th>
                 <td>{item.repositoryName}</td>
                 <td>{item.createdDate}</td>
+                <td>{item.watching}</td>
                 <td>
                   {email === item.authorEmail ? (
                     <div>
-                      <p className="font-bold">{item.watching}</p>
-                    </div>
-                  ) : (
-                    <div>
-                      <Link to={""}>
-                        <button className="btn btn-info text-white">
-                          Add to Watch
-                        </button>
-                      </Link>
-                    </div>
-                  )}
-                </td>
-                <td>
-                  {email === item.authorEmail ? (
-                    <div>
-                      <Button onClick={() => handleOpen(item)}>
-                        <RiEdit2Fill className="text-xl" />
+                      <Button
+                        variant="contained"
+                        onClick={() => handleOpen(item)}
+                      >
+                        Add/Edit Code
                       </Button>
                     </div>
                   ) : (
                     <div>
-                      <Link to={""}>
-                        <button className="btn btn-info text-white">
-                          Pull Request
-                        </button>
-                      </Link>
+                      <Button
+                        variant="contained"
+                        onClick={() => handleOpenUser(item)}
+                      >
+                        Details
+                      </Button>
                     </div>
                   )}
+                </td>
+                <td>
+                  <Button onClick={() => handleWatch(item)} variant="contained">
+                    Add to Watch
+                  </Button>
+                </td>
+                <td>
+                  <Button onClick={() => handlePullReq(item)} variant="contained">
+                    Pull Request
+                  </Button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      {/* author model */}
       <Modal
         key={editableItem?._id}
         open={open}
@@ -156,9 +204,14 @@ const Repositories = () => {
           <div className="flex gap-4">
             <div>
               {edit ? (
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                  Code: {editableItem?.Code}
-                </Typography>
+                <TextField
+                  name="Code"
+                  type="text"
+                  id="outlined-multiline-static"
+                  multiline
+                  rows={4}
+                  defaultValue={editableItem?.Code}
+                />
               ) : (
                 <TextField
                   name="Code"
@@ -214,8 +267,48 @@ const Repositories = () => {
                 Save
               </Button>
             )}
+            <Button
+              variant="outlined"
+              onClick={() => handleDelete(editableItem)}
+            >
+              Delete
+            </Button>
             <Button variant="outlined" onClick={handleClose}>
               Cancel
+            </Button>
+          </div>
+        </Box>
+      </Modal>
+      {/* user model */}
+      <Modal
+        key={itemUser?._id}
+        open={openUser}
+        onClose={handleCloseUser}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <div className="flex gap-4">
+            <div>
+              <TextField
+                name="Code"
+                type="text"
+                id="outlined-multiline-static"
+                multiline
+                rows={4}
+                defaultValue={itemUser?.Code}
+              />
+            </div>
+            <div>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Language: {itemUser?.language}
+              </Typography>
+            </div>
+          </div>
+
+          <div className="flex gap-2 items-center justify-end mt-2">
+            <Button variant="outlined" onClick={handleCloseUser}>
+              Close
             </Button>
           </div>
         </Box>
