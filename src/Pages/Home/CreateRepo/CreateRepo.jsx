@@ -24,6 +24,7 @@ const CreateRepo = () => {
       createdDate: date,
       watching: 0,
       Code:"",
+      language:"",
     };
     console.log(repositories);
     const result = await axiosPublic.post("/repositories", repositories);

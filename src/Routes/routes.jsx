@@ -6,6 +6,7 @@ import Home from "../Pages/Home/Home/Home";
 import Login from "../Pages/Home/Login/Login";
 import Register from "../Pages/Home/Register/Register";
 import CreateRepo from "../Pages/Home/CreateRepo/CreateRepo";
+import Repositories from "../Pages/Home/Repositories/Repositories";
 
 export const router = createBrowserRouter([
     {
@@ -27,6 +28,10 @@ export const router = createBrowserRouter([
         {
             path: '/createRepo',
             element: <CreateRepo></CreateRepo>
+        },
+        {
+            path: '/repositories',
+            element: <Repositories></Repositories>
         },
       ]
     },
