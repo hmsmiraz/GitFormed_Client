@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import useAuth from "../../../Hooks/useAuth";
 import useRepositories from "../../../Hooks/useRepositories";
 import Box from "@mui/material/Box";
@@ -10,8 +9,7 @@ import MenuItem from "@mui/material/MenuItem";
 import React from "react";
 import Swal from "sweetalert2";
 import useAxiosPublic from "../../../Hooks/useAxiosPublic";
-import { RiEdit2Fill } from "react-icons/ri";
-import { FcViewDetails } from "react-icons/fc";
+import { FaEyeSlash } from "react-icons/fa";
 const style = {
   position: "absolute",
   top: "50%",
@@ -27,6 +25,7 @@ const style = {
 const Repositories = () => {
   const [repositories, , refetch] = useRepositories();
   const { user } = useAuth();
+  const date = new Date();
   const email = user?.email;
   const axiosPublic = useAxiosPublic();
   const [open, setOpen] = React.useState(false);
@@ -52,10 +51,6 @@ const Repositories = () => {
       label: "java",
     },
   ];
-  //   const filteredRepo = repositories.filter(
-  //     (repository) => repository.authorEmail == email
-  //   );
-  //   console.log(filteredRepo);
   const handleOpen = (item) => {
     setEditableItem(item);
     setOpen(true);
@@ -70,7 +65,6 @@ const Repositories = () => {
   const handleCloseUser = () => {
     setOpenUser(false);
   };
-
   const handleChange = (event, Code, language) => {
     editableItem[Code] = event.target.value;
     editableItem[language] = event.target.value;
@@ -128,7 +122,24 @@ const Repositories = () => {
     console.log(item._id);
   };
   const handlePullReq = async (item) => {
-    console.log(item.createdDate);
+    const pullReqData = {
+      pullReqDate: date,
+      repoName: item.repositoryName,
+      authorEmail: item.authorEmail,
+      reqUserEmail: email,
+      repoId: item._id,
+    };
+    // console.log(pullReqData)
+    const result = await axiosPublic.post("/pullRequest", pullReqData);
+    if (result.data.insertedId) {
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: `${item.repositoryName} add to Pull Request List.`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
   };
   return (
     <div className="my-5">
@@ -155,7 +166,13 @@ const Repositories = () => {
                 <th>{index + 1}</th>
                 <td>{item.repositoryName}</td>
                 <td>{item.createdDate}</td>
-                <td>{item.watching}</td>
+                <td>
+                  {email === item.authorEmail ? (
+                    item.watching
+                  ) : (
+                    <div>{<FaEyeSlash />}</div>
+                  )}
+                </td>
                 <td>
                   {email === item.authorEmail ? (
                     <div>
@@ -183,7 +200,10 @@ const Repositories = () => {
                   </Button>
                 </td>
                 <td>
-                  <Button onClick={() => handlePullReq(item)} variant="contained">
+                  <Button
+                    onClick={() => handlePullReq(item)}
+                    variant="contained"
+                  >
                     Pull Request
                   </Button>
                 </td>
@@ -201,17 +221,12 @@ const Repositories = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <div className="flex gap-4">
+          <div className="flex flex-col gap-4">
             <div>
               {edit ? (
-                <TextField
-                  name="Code"
-                  type="text"
-                  id="outlined-multiline-static"
-                  multiline
-                  rows={4}
-                  defaultValue={editableItem?.Code}
-                />
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                  Code: {editableItem?.Code}
+                </Typography>
               ) : (
                 <TextField
                   name="Code"
@@ -288,16 +303,11 @@ const Repositories = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <div className="flex gap-4">
+          <div className="flex flex-col gap-4">
             <div>
-              <TextField
-                name="Code"
-                type="text"
-                id="outlined-multiline-static"
-                multiline
-                rows={4}
-                defaultValue={itemUser?.Code}
-              />
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Code: {editableItem?.Code}
+              </Typography>
             </div>
             <div>
               <Typography id="modal-modal-title" variant="h6" component="h2">
