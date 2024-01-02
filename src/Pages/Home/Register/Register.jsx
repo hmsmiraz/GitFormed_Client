@@ -45,7 +45,7 @@ const Register = () => {
               icon: "success",
               confirmButtonText: "Cool",
             });
-            navigate("/");
+            navigate("/repositories");
           })
           .catch((error) => {
             console.log(error);

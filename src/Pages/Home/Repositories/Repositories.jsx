@@ -10,6 +10,7 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 import { FaEyeSlash } from "react-icons/fa";
+import moment from "moment";
 const style = {
   position: "absolute",
   top: "50%",
@@ -27,7 +28,7 @@ const Repositories = () => {
   const { user } = useAuth();
   const email = user?.email;
   const axiosPublic = useAxiosPublic();
-  const date = new Date();
+  const date = moment().format("MMMM Do YYYY, h:mm:ss a");
   const [open, setOpen] = React.useState(false);
   const [openUser, setOpenUser] = React.useState(false);
   const [edit, setEdit] = React.useState(true);
@@ -180,8 +181,11 @@ const Repositories = () => {
     const nameB = b.repositoryName.toLowerCase();
     return nameA.localeCompare(nameB);
   });
-  const sortedByLatest = [...sortedRepositories].sort((a, b) => {
-    return new Date(b.createdDate) - new Date(a.createdDate);
+  const sortedByLatest = sortedRepositories.slice().sort((a, b) => {
+    return (
+      moment(b.createdDate, "MMMM Do YYYY, h:mm:ss a").toDate() -
+      moment(a.createdDate, "MMMM Do YYYY, h:mm:ss a").toDate()
+    );
   });
   const sortedByWatchers = [...sortedRepositories].sort((a, b) => {
     return b.watching - a.watching;

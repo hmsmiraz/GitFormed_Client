@@ -1,9 +1,8 @@
-import { Link } from "react-router-dom";
 import useAuth from "../../../Hooks/useAuth";
 import { useForm } from "react-hook-form";
 import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 import Swal from "sweetalert2";
-
+import moment from "moment";
 const CreateRepo = () => {
   const {
     reset,
@@ -13,7 +12,7 @@ const CreateRepo = () => {
   } = useForm();
   const { user } = useAuth();
   const authorEmail = user?.email;
-  const date = new Date();
+  const date = moment().format('MMMM Do YYYY, h:mm:ss a');
   const axiosPublic = useAxiosPublic();
 
   const onSubmit = async (data) => {
@@ -23,8 +22,8 @@ const CreateRepo = () => {
       repositoryName,
       createdDate: date,
       watching: 0,
-      Code:"",
-      language:"",
+      Code: "",
+      language: "",
     };
     console.log(repositories);
     const result = await axiosPublic.post("/repositories", repositories);
@@ -36,10 +35,12 @@ const CreateRepo = () => {
         showConfirmButton: false,
         timer: 1500,
       });
+      reset();
     }
   };
   return (
     <div className="m-5">
+     
       <h2 className="text-3xl my-10 text-center font-bold">
         Create Your Repository!
       </h2>

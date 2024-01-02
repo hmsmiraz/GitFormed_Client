@@ -23,7 +23,7 @@ const Login = () => {
           icon: "success",
           confirmButtonText: "Cool",
         });
-        navigate("/");
+        navigate("/repositories");
       })
       .catch((error) => {
         console.log(error);
@@ -54,7 +54,7 @@ const Login = () => {
           icon: "success",
           confirmButtonText: "Cool",
         });
-        navigate("/");
+        navigate("/repositories");
       })
       .catch((error) => {
         console.log(error);
