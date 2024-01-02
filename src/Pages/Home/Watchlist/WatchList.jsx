@@ -3,43 +3,42 @@ import useAuth from "../../../Hooks/useAuth";
 import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 import useWatchList from "../../../Hooks/useWatchList";
 import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
 
 const WatchList = () => {
   const [watchList, , refetch] = useWatchList();
   const { user } = useAuth();
   const email = user?.email;
   const axiosPublic = useAxiosPublic();
-  const filteredWatchList = watchList.filter( (item) => item.email == email );
-//   console.log(filteredWatchList)
-const handleDelete = (item)=>{
-    console.log(item._id)
+  const filteredWatchList = watchList.filter((item) => item.email == email);
+  //   console.log(filteredWatchList)
+  const handleDelete = (item) => {
+    console.log(item._id);
     Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          const res = await axiosPublic.delete(
-            `/watchList/${item._id}`
-          );
-          console.log(res.data);
-          if (res.data.deletedCount > 0) {
-            refetch();
-            Swal.fire({
-              position: "center",
-              icon: "success",
-              title: `${item.repositoryName} has been deleted from Watch List!`,
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          }
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const res = await axiosPublic.delete(`/watchList/${item._id}`);
+        console.log(res.data);
+        if (res.data.deletedCount > 0) {
+          refetch();
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: `${item.repositoryName} has been deleted from Watch List!`,
+            showConfirmButton: false,
+            timer: 1500,
+          });
         }
-      });
-  }
+      }
+    });
+  };
   return (
     <div>
       <h2 className="font-bold text-2xl text-blue-500 text-center">
@@ -53,6 +52,7 @@ const handleDelete = (item)=>{
               <th>#</th>
               <th>Repository Name</th>
               <th>Action</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -61,12 +61,17 @@ const handleDelete = (item)=>{
                 <th>{index + 1}</th>
                 <td>{item.repositoryName}</td>
                 <td>
-                    <Button
-                      variant="contained"
-                      onClick={() => handleDelete(item)}
-                    >
-                      Delete
-                    </Button>
+                  <Link to={"/repositories"}>
+                    <Button variant="contained">Details</Button>
+                  </Link>
+                </td>
+                <td>
+                  <Button
+                    variant="contained"
+                    onClick={() => handleDelete(item)}
+                  >
+                    Delete
+                  </Button>
                 </td>
               </tr>
             ))}

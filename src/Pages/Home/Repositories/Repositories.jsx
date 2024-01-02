@@ -180,8 +180,8 @@ const Repositories = () => {
           <thead>
             <tr>
               <th>#</th>
-              <th>repositoryName</th>
-              <th>createdDate</th>
+              <th>Repository Name</th>
+              <th>Created Date</th>
               <th>Total Watcher</th>
               <th>Action</th>
               <th>Action</th>

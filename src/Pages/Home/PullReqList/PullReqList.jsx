@@ -3,6 +3,7 @@ import useAuth from "../../../Hooks/useAuth";
 import usePullReq from "../../../Hooks/usePullReq";
 import Button from "@mui/material/Button";
 import useAxiosPublic from "../../../Hooks/useAxiosPublic";
+import { Link } from "react-router-dom";
 
 const PullReqList = () => {
   const [pullRequestList, , refetch] = usePullReq();
@@ -79,12 +80,9 @@ const PullReqList = () => {
                       Delete
                     </Button>
                   ) : (
-                    <Button
-                      variant="contained"
-                      onClick={() => handleDetails(item)}
-                    >
-                      Details
-                    </Button>
+                    <Link to={"/repositories"}>
+                      <Button variant="contained">Details</Button>
+                    </Link>
                   )}
                 </td>
               </tr>
