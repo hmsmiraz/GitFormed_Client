@@ -5,7 +5,7 @@ const RepoHomeAll = () => {
   const [repositories] = useRepositories();
   return (
     <div className="my-5">
-      <h2 className="text-2xl font-bold text-center text-blue-500">
+      <h2 className="text-3xl font-bold text-center text-blue-500 uppercase my-5">
         All Repositories
       </h2>
       <div className="overflow-x-auto my-5">
@@ -20,7 +20,7 @@ const RepoHomeAll = () => {
             </tr>
           </thead>
           <tbody>
-            {repositories.map((item, index) => (
+            {repositories.slice(0, 10).map((item, index) => (
               <tr key={item._id}>
                 <th>{index + 1}</th>
                 <td>{item.repositoryName}</td>

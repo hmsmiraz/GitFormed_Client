@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { TextField } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 import { FaEyeSlash } from "react-icons/fa";
@@ -33,6 +33,11 @@ const Repositories = () => {
   const [edit, setEdit] = React.useState(true);
   const [editableItem, setEditableItem] = React.useState(null);
   const [itemUser, setItemUser] = React.useState(null);
+  const [sortedRepositories, setSortedRepositories] = useState([]);
+  useEffect(() => {
+    setSortedRepositories([...repositories]);
+  }, [repositories]);
+
   const languages = [
     {
       value: "javascript",
@@ -123,7 +128,7 @@ const Repositories = () => {
       email,
       authorEmail: item.authorEmail,
       repositoryName: item.repositoryName,
-    }
+    };
     console.log(watchListDetails);
     const result = await axiosPublic.post("/watchList", watchListDetails);
     if (result.data.insertedId) {
@@ -169,11 +174,63 @@ const Repositories = () => {
       });
     }
   };
+
+  const sortedAlphabetically = [...sortedRepositories].sort((a, b) => {
+    const nameA = a.repositoryName.toLowerCase();
+    const nameB = b.repositoryName.toLowerCase();
+    return nameA.localeCompare(nameB);
+  });
+  const sortedByLatest = [...sortedRepositories].sort((a, b) => {
+    return new Date(b.createdDate) - new Date(a.createdDate);
+  });
+  const sortedByWatchers = [...sortedRepositories].sort((a, b) => {
+    return b.watching - a.watching;
+  });
+  const handleSearchByType = (event) => {
+    event.preventDefault();
+    const sortBy = event.target.value;
+
+    switch (sortBy) {
+      case "alphabetical":
+        setSortedRepositories([...sortedAlphabetically]);
+        break;
+      case "latest":
+        setSortedRepositories([...sortedByLatest]);
+        break;
+      case "watchers":
+        setSortedRepositories([...sortedByWatchers]);
+        break;
+      default:
+        // Default sorting or resetting to initial state
+        setSortedRepositories([...repositories]);
+        break;
+    }
+  };
   return (
     <div className="my-5">
       <h2 className="font-bold text-2xl text-blue-500 text-center">
         All Repositories Here!
       </h2>
+      <div className="my-5">
+        <form
+          onSubmit={handleSearchByType}
+          className="flex items-center justify-center"
+        >
+          <div className="form-control">
+            <select
+              className="select select-bordered"
+              type="text"
+              name="filterByType"
+              required
+              onChange={handleSearchByType}
+            >
+              <option value="alphabetical">Sort by A-Z</option>
+              <option value="latest">Sort by Latest</option>
+              <option value="watchers">Sort by Watching</option>
+            </select>
+          </div>
+        </form>
+      </div>
       <div className="overflow-x-auto mt-3">
         <table className="table w-full">
           {/* head */}
@@ -189,7 +246,7 @@ const Repositories = () => {
             </tr>
           </thead>
           <tbody>
-            {repositories.map((item, index) => (
+            {sortedRepositories.map((item, index) => (
               <tr key={item._id}>
                 <th>{index + 1}</th>
                 <td>{item.repositoryName}</td>
