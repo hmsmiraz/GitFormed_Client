@@ -25,9 +25,9 @@ const style = {
 const Repositories = () => {
   const [repositories, , refetch] = useRepositories();
   const { user } = useAuth();
-  const date = new Date();
   const email = user?.email;
   const axiosPublic = useAxiosPublic();
+  const date = new Date();
   const [open, setOpen] = React.useState(false);
   const [openUser, setOpenUser] = React.useState(false);
   const [edit, setEdit] = React.useState(true);
@@ -119,7 +119,35 @@ const Repositories = () => {
     });
   };
   const handleWatch = async (item) => {
-    console.log(item._id);
+    const watchListDetails = {
+      email,
+      authorEmail: item.authorEmail,
+      repositoryName: item.repositoryName,
+    }
+    console.log(watchListDetails);
+    const result = await axiosPublic.post("/watchList", watchListDetails);
+    if (result.data.insertedId) {
+      axiosPublic.patch(`/repositories/${item._id}`).then((res) => {
+        console.log(res.data);
+        if (res.data.modifiedCount > 0) {
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: `${item.repositoryName} has been added to watchList!`,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          refetch();
+        }
+      });
+      // Swal.fire({
+      //   position: "top-end",
+      //   icon: "success",
+      //   title: `${item.repositoryName} add to Pull Request List.`,
+      //   showConfirmButton: false,
+      //   timer: 1500,
+      // });
+    }
   };
   const handlePullReq = async (item) => {
     const pullReqData = {

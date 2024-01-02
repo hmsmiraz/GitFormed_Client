@@ -9,39 +9,37 @@ const PullReqList = () => {
   const { user } = useAuth();
   const email = user?.email;
   const axiosPublic = useAxiosPublic();
-  
-  const handleDelete = (item)=>{
-    console.log(item._id)
+
+  const handleDelete = (item) => {
+    console.log(item._id);
     Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          const res = await axiosPublic.delete(
-            `/pullRequest/${item._id}`
-          );
-          console.log(res.data);
-          if (res.data.deletedCount > 0) {
-            refetch();
-            Swal.fire({
-              position: "center",
-              icon: "success",
-              title: `${item.repoName} has been deleted from Pull Req List!`,
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          }
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const res = await axiosPublic.delete(`/pullRequest/${item._id}`);
+        console.log(res.data);
+        if (res.data.deletedCount > 0) {
+          refetch();
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: `${item.repoName} has been deleted from Pull Req List!`,
+            showConfirmButton: false,
+            timer: 1500,
+          });
         }
-      });
-  }
-  const handleDetails = (item)=>{
-    console.log(item.reqUserEmail)
-  }
+      }
+    });
+  };
+  const handleDetails = (item) => {
+    console.log(item.reqUserEmail);
+  };
   return (
     <div>
       <h2 className="text-2xl text-center text-blue-500 font-bold">
@@ -75,18 +73,18 @@ const PullReqList = () => {
                 <td>
                   {email === item.authorEmail ? (
                     <Button
-                    variant="contained"
-                    onClick={() => handleDelete(item)}
-                  >
-                    Delete
-                  </Button>
+                      variant="contained"
+                      onClick={() => handleDelete(item)}
+                    >
+                      Delete
+                    </Button>
                   ) : (
                     <Button
-                    variant="contained"
-                    onClick={() => handleDetails(item)}
-                  >
-                    Details
-                  </Button>
+                      variant="contained"
+                      onClick={() => handleDetails(item)}
+                    >
+                      Details
+                    </Button>
                   )}
                 </td>
               </tr>
